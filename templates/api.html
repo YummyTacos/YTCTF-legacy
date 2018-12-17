@@ -1,0 +1,62 @@
+{# YTCTF Platform
+{# Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+{# See full NOTICE at http://github.com/YummyTacos/YTCTF #}
+
+{% extends 'base.html' %}
+{% block content %}
+    {# TODO: дописать #}
+    <h1>Документация API</h1>
+    <h2>Методы</h2>
+    <div class="row">
+        <div class="col-3">
+            <div class="list-group" id="list-tab" role="tablist">
+                <a class="list-group-item list-group-item-action" data-toggle="list" role="tab"
+                   href="#api-auth">
+                    Аутентификация (/auth)
+                </a>
+                <a class="list-group-item list-group-item-action" data-toggle="list" role="tab"
+                   href="#api-tasks">
+                    Таски (/tasks)
+                </a>
+                <a class="list-group-item list-group-item-action" data-toggle="list" role="tab"
+                   href="#api-task">
+                    Информация о таске (/task)
+                </a>
+                <a class="list-group-item list-group-item-action" data-toggle="list" role="tab"
+                   href="#api-scoreboard">
+                    Результаты (/scoreboard)
+                </a>
+                <a class="list-group-item list-group-item-action" data-toggle="list" role="tab"
+                   href="#api-user">
+                    Пользователи (/user)
+                </a>
+                <a class="list-group-item list-group-item-action" data-toggle="list" role="tab"
+                   href="#api-updates">
+                    События (/events)
+                </a>
+            </div>
+        </div>
+        <div class="col-9">
+            <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade" id="api-auth" role="tabpanel">
+                    ...
+                </div>
+                <div class="tab-pane fade" id="api-tasks" role="tabpanel">
+                    ...
+                </div>
+                <div class="tab-pane fade" id="api-task" role="tabpanel">
+                    ...
+                </div>
+                <div class="tab-pane fade" id="api-scoreboard" role="tabpanel">
+                    ...
+                </div>
+                <div class="tab-pane fade" id="api-user" role="tabpanel">
+                    ...
+                </div>
+                <div class="tab-pane fade" id="api-updates" role="tabpanel">
+                    ...
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

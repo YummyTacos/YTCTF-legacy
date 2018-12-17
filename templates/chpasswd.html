@@ -1,0 +1,38 @@
+{# YTCTF Platform
+{# Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+{# See full NOTICE at http://github.com/YummyTacos/YTCTF #}
+
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Изменение пароля пользователя {{ username }}</h1>
+    <form method="post">
+        {{ form.hidden_tag() }}
+        <div class="form-row my-1">
+            <div class="col-auto">
+                {{ form.old_password(placeholder='Старый пароль',
+                                     class='form-control bg-dark text-light' + (' is-invalid' if form.errors.old_password else '')) }}
+                {% for error in form.errors.old_password %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="form-row my-1">
+            <div class="col-auto">
+                {{ form.new_password(placeholder='Новый пароль',
+                                     class='form-control bg-dark text-light') }}
+            </div>
+        </div>
+        <div class="form-row my-1">
+            <div class="col-auto">
+                {{ form.new_password2(placeholder='Новый пароль ещё раз',
+                                      class='form-control bg-dark text-light' + (' is-invalid' if form.errors.new_password2 else '')) }}
+                {% for error in form.errors.new_password2 %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="my-1">
+            {{ form.submit(value='Изменить пароль', class='btn btn-primary') }}
+        </div>
+    </form>
+{% endblock %}

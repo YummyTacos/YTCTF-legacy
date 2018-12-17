@@ -1,0 +1,207 @@
+/** YTCTF Platform
+ * Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+ * See full NOTICE at http://github.com/YummyTacos/YTCTF
+ */
+
+@import url('https://fonts.googleapis.com/css?family=Roboto|Material+Icons');
+
+body {
+    padding-top: 4.5rem;
+    padding-bottom: 1rem;
+    font-family: 'Roboto', sans-serif;
+}
+
+.material-icons {
+    font-size: 18px;
+}
+
+.material-icons#delete-file {
+    color: red;
+}
+
+.score {
+    font-size: 2rem;
+}
+
+.task-grid {
+    display: -ms-grid;
+    display: grid;
+    grid-gap: 0.75rem 1rem;
+    -ms-grid-columns: 1fr;
+        grid-template-columns: 1fr;
+}
+
+.task-card {
+    -webkit-transition: 0.125s;
+    -o-transition: 0.125s;
+    transition: 0.125s;
+    padding: 1rem;
+    position: relative;
+    opacity: 1;
+    background: #777777;
+}
+
+.solved {
+    opacity: 0.5;
+}
+
+.solved:hover {
+    opacity: 1;
+}
+
+.task-card, .task-card:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
+.task-name {
+    font-size: 1.5rem;
+}
+
+.task-points, .scoreboard-points {
+    font-size: 2rem;
+}
+
+.task-points {
+    float: right;
+}
+
+.task-category, .user-points {
+    font-size: 1.25rem;
+}
+
+.task-hidden {
+    border: 1px solid red;
+}
+
+#task-description {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.user-info {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    padding: 0.375rem 0.75rem;
+}
+
+#scoreboard {
+    background: #212529;
+}
+
+.scoreboard-loading {
+    background: none !important;
+    margin-top: 0.5rem;
+}
+
+
+.scoreboard-row:nth-child(even) {
+    background: #4a5055;
+}
+
+.scoreboard-row {
+    padding: 0.5rem;
+    display: -ms-grid;
+    display: grid;
+    -ms-grid-columns: 70fr 25fr;
+        grid-template-columns: 70fr 25fr;
+    grid-column-gap: 1rem;
+    -webkit-box-align: start;
+        -ms-flex-align: start;
+            align-items: start;
+}
+
+.scoreboard-info {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.scoreboard-user {
+    font-weight: bold;
+}
+
+.scoreboard-extra {
+    font-size: 0.75rem;
+    font-weight: normal;
+    display: block;
+    margin-top: 0.25rem;
+}
+
+.scoreboard-points {
+    -ms-grid-column-align: end;
+        justify-self: end;
+}
+
+.scoreboard-self {
+    background: #254b25 !important;
+}
+
+@media (max-width: 575px) {
+    .task-name {
+        display: inline;
+        font-size: 1.25rem;
+    }
+
+    .people-solved-count {
+        display: none;
+    }
+
+    .task-category {
+        float: right;
+        font-size: 1rem;
+    }
+
+    .task-points {
+        margin-left: 0.25rem;
+        font-size: 1.5rem;
+    }
+}
+
+.profile-column {
+    width: 100%;
+    padding-bottom: 1rem;
+}
+
+@media (min-width: 576px) {
+    .task-grid {
+        -ms-grid-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr;
+        grid-gap: 1.5rem 1rem;
+    }
+
+    .profile-column {
+        width: 45%;
+    }
+}
+
+@media (min-width: 992px) {
+    .task-grid {
+        -ms-grid-columns: 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+#token {
+    opacity: 0;
+    -webkit-transition: 0.5s;
+    -o-transition: 0.5s;
+    transition: 0.5s;
+}
+
+#token:hover {
+    opacity: 1;
+}
+
+#not-solved {
+    font-size: 2rem;
+}
+
+/* A bit of fun and UB (maybe), because I don't want to write more JS code */
+
+a[data-toggle=collapse][aria-expanded=false]::before {
+    content: '+';
+}
+
+a[data-toggle=collapse][aria-expanded=true]::before {
+    content: '-';
+}

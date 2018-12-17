@@ -1,0 +1,7 @@
+/data
+__pycache__
+venv
+/remote
+/config.py
+/static/files/exc
+/static/files/tasks

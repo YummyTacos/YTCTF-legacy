@@ -1,0 +1,52 @@
+/** YTCTF Platform
+ * Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+ * See full NOTICE at http://github.com/YummyTacos/YTCTF
+ */
+
+.joy {
+    background: #cd5791;
+}
+
+.recon {
+    background: #00bfff;
+}
+
+.stegano {
+    background: #da6d49;
+}
+
+.crypto {
+    background: #904714;
+}
+
+.ppc {
+    background: #859900;
+}
+
+.reverse {
+    background: #166684;
+}
+
+.forensics {
+    background: #820082;
+}
+
+.web {
+    background: #0000cd;
+}
+
+.admin {
+    background: #073642;
+}
+
+.ctb {
+    background: #191950;
+}
+
+.misc {
+    background: #765649;
+}
+
+.pwn {
+    background: #670098;
+}

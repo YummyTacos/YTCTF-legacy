@@ -1,0 +1,15 @@
+{# YTCTF Platform
+{# Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+{# See full NOTICE at http://github.com/YummyTacos/YTCTF #}
+
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Токен получен!</h1>
+    <p>
+        Теперь вы можете использовать его для авторизации у бота и других приложений, использующих
+        API. <u>Токен действителен не более суток.</u>
+    </p>
+    <p>
+        Кстати, вот и токен: <code id="token">{{ token }}</code>
+    </p>
+{% endblock %}

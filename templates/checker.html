@@ -1,0 +1,27 @@
+{# YTCTF Platform
+{# Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+{# See full NOTICE at http://github.com/YummyTacos/YTCTF #}
+
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Таски</h1>
+    <div class="task-grid">
+        {% for task in tasks if (not task.is_hidden or request.args.get('hidden', False) or g.user.is_admin) %}
+            {% set solved = g.user in task.solved or g.user.is_admin or g.user in task.authors %}
+            {% set people_solved = task.solved|length %}
+            <a href="{{ url_for('task', task_id=task.id) }}"
+               class="{% if solved %}solved {% endif %}{% if task.is_hidden %}task-hidden {% endif %}task-card rounded {{ task.category }}">
+                <p class="task-name">{{ task.task }}</p>
+                <span class="task-points">{{ task.points }}</span>
+                <span class="task-category">{{ task.category }}</span>
+                <br/>
+                <span class="people-solved-count">{{ people_solved }} {{ g.get_ending('человек', people_solved, '', 'а', '') }} {{ g.get_ending('решил', people_solved, '', 'и', 'и') }}</span>
+            </a>
+        {% else %}
+            <p><i>Тасков нет, но вы держитесь там</i></p>
+        {% endfor %}
+    </div>
+{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/categories.css') }}">
+{% endblock %}

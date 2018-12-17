@@ -1,0 +1,113 @@
+{# YTCTF Platform
+{# Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+{# See full NOTICE at http://github.com/YummyTacos/YTCTF #}
+
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    {% include 'favicon.html' %}
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block styles %}{% endblock %}
+
+    <title>YTCTF{% if title %} — {{ title }}{% endif %}</title>
+</head>
+<body class="bg-dark text-light">
+<header class="fixed-top">
+    <nav class="navbar navbar-expand-md navbar-dark bg-info" id="navbar">
+        <a class="navbar-brand" href="{{ url_for('main') }}">
+            <img src="{{ url_for('static', filename='favicon-32x32.png') }}" class="d-inline-block align-top" alt="" />
+            YTCTF
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                data-target="#navbar-content" aria-controls="navbar-content"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbar-content">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main') }}">Таски</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('scoreboard') }}">Результаты</a>
+                </li>
+                {% if g.user and g.user.is_admin %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="admin-dropdown"
+                           data-toggle="dropdown" aria-haspopup="true"
+                           aria-expanded="false">
+                            Админка
+                        </a>
+                        <div class="dropdown-menu bg-info"
+                             aria-labelledby="admin-dropdown">
+                            <a class="dropdown-item bg-info text-light" href="{{ url_for('admin.add_task') }}">
+                                Добавить таск
+                            </a>
+                            <a class="dropdown-item bg-info text-light" href="{{ url_for('admin.recalculate') }}">
+                                Пересчитать баллы
+                            </a>
+                            <a class="dropdown-item bg-info text-light" href="{{ url_for('admin.submits') }}">
+                                Посылки
+                            </a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                    </li>
+                {% endif %}
+            </ul>
+            <div>
+                {% if g.user %}
+                    <p class="d-md-inline mr-md-2">
+                        Привет,
+                        <a href="{{ url_for('user', user_id=g.user.id) }}" class="text-light">
+                            <b>{{ g.user.username }}</b>
+                        </a> ({{ g.user.points if not g.user.is_admin else 'admin' }})
+                    </p>
+                {% endif %}
+                {% if g.user %}
+                    <a href="{{ url_for('logout') }}" class="btn btn-danger" role="button">
+                        Выйти
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+</header>
+<div id="notifications" class="container">
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="row">
+                    <div class="col">
+                        <div class="alert alert-{{ 'primary' if msg[0] == 'message' else msg[0] }} alert-dismissible fade show"
+                             role="alert">
+                            {{ msg[1] }}
+                            <button type="button" class="close" data-dismiss="alert"
+                                    aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+<div id="content" class="container">
+    {% block content %}{% endblock %}
+</div>
+{% block body %}{% endblock %}
+
+<script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

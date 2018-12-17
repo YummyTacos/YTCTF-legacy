@@ -1,0 +1,18 @@
+{# YTCTF Platform
+{# Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+{# See full NOTICE at http://github.com/YummyTacos/YTCTF #}
+
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Результаты</h1>
+    <div class="custom-control custom-checkbox my-1">
+        <input type="checkbox" class="custom-control-input" id="show-all">
+        <label for="show-all" class="custom-control-label">Показать всех</label>
+    </div>
+    <div id="scoreboard" class="scoreboard-loading">
+        <i>Загрузка...</i>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/scoreboard.js') }}"></script>
+{% endblock %}

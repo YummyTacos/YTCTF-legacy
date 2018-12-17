@@ -1,0 +1,20 @@
+{# YTCTF Platform
+{# Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+{# See full NOTICE at http://github.com/YummyTacos/YTCTF #}
+
+{% extends 'base.html' %}
+{% block content %}
+    <h1>{{ code }} {{ name }}</h1>
+    {% if desc %}
+        <p><i>{{ desc }}</i></p>
+    {% else %}
+        <p><i>Что-то пошло не так, и сайт сломался :(</i></p>
+    {% endif %}
+    <p><b>Код ошибки: </b><code>{{ exc }}</code></p>
+    <p><i>
+        Если вы считаете, что этого не должно было произойти, отправьте код ошибки
+        <a href="tg://resolve?domain=pycodecat">@pycodecat</a> в Telegram, чтобы он починил платформу
+    </i></p>
+    {{ r }}
+    <button class="btn btn-outline-info" id="page-back">&larr; Назад</button>
+{% endblock %}

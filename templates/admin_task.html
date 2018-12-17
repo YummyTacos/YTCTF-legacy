@@ -1,0 +1,156 @@
+{# YTCTF Platform
+{# Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+{# See full NOTICE at http://github.com/YummyTacos/YTCTF #}
+
+{% extends 'base.html' %}
+{% block content %}
+    {% if new %}
+        <h1>Новый таск</h1>
+    {% else %}
+        <h1>Редактирование таска</h1>
+    {% endif %}
+    <form method="post" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.name(placeholder='Таск',
+                             class='form-control bg-dark text-light' + (' is-invalid' if form.errors.name else '')) }}
+            {% for error in form.errors.name %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            {{ form.category(placeholder='Категория', autocomplete='off', list='categories',
+                                 class='form-control bg-dark text-light' + (' is-invalid' if form.errors.category else '')) }}
+            {% for error in form.errors.category %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+            <datalist id="categories">
+                {% for v in ('web', 'stegano', 'crypto', 'admin', 'ppc', 'reverse', 'forensics', 'ctb', 'pwn', 'joy', 'recon', 'misc') %}
+                    <option value="{{ v }}"></option>
+                {% endfor %}
+            </datalist>
+        </div>
+        <div class="form-group">
+            {{ form.description(placeholder='Описание таска',
+                                 class='form-control bg-dark text-light' + (' is-invalid' if form.errors.description else '')) }}
+            {% for error in form.errors.description %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            {{ form.hint(placeholder='Подсказка',
+                                 class='form-control bg-dark text-light' + (' is-invalid' if form.errors.hint else '')) }}
+            {% for error in form.errors.hint %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            {{ form.link(placeholder='Ссылка',
+                                 class='form-control bg-dark text-light' + (' is-invalid' if form.errors.link else '')) }}
+            {% for error in form.errors.link %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="form-group form-row">
+            <div class="col">
+                <div class="custom-file">
+                    {{ form.files(class='custom-file-input' + (' is-invalid' if form.errors.files else ''), multiple=True) }}
+                    {{ form.files.label(class='custom-file-label text-light bg-dark') }}
+                    {% for error in form.errors.files %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            <button class="btn btn-secondary col-auto" id="clear-file" type="button">
+                Сброс
+            </button>
+        </div>
+        <div class="form-group">
+            {{ form.points(placeholder='Очки', min=0, step=25,
+                                 class='form-control bg-dark text-light' + (' is-invalid' if form.errors.points else '')) }}
+            {% for error in form.errors.points %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            {{ form.author(class='bg-dark text-light custom-select' + (' is-invalid' if form.errors.author else '')) }}
+            {% for error in form.errors.author %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="form-group form-row">
+            <div class="col">
+                {{ form.flag(placeholder='Флаг', autocomplete='off', pattern='^(test|yt)ctf[a-zA-Z0-9_]+$',
+                                 class='form-control bg-dark text-light' + (' is-invalid' if form.errors.flag else '')) }}
+                {% for error in form.errors.flag %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <button class="btn btn-warning col-auto" id="show-flag" type="button">
+                Показать флаг
+            </button>
+        </div>
+        {% if not new %}
+            <div class="form-group">
+                {% for file in task.files %}
+                    <a href="{{ url_for('static', filename='files/tasks/' + task.id|string + '/' + file.file) }}">
+                        <i class="material-icons">attachment</i> {{ file.file }}
+                    </a>
+                    <a data-toggle="modal" href="#file{{ file.id }}-delete-confirm">
+                        <i class="material-icons" id="delete-file">delete</i>
+                    </a><br/>
+                    <div class="modal fade" id="file{{ file.id }}-delete-confirm" tabindex="-1"
+                         role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content bg-dark">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Подтвердите удаление</h5>
+                                    <button class="close" data-dismiss="modal">
+                                        <span>&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>
+                                        Вы действительно хотите удалить
+                                        файл <i>{{ file.file }}</i>?
+                                    </p>
+                                    <p><b><u><i>Это действие необратимо!</i></u></b></p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-success" data-dismiss="modal">
+                                        Нет, я ошибся
+                                    </button>
+                                    <a class="btn btn-danger"
+                                       href="{{ url_for('admin.delete_file', file_id=file.id) }}">
+                                        Да, удалить файл
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <div class="custom-control custom-checkbox my-1">
+            {{ form.is_hidden(class='custom-control-input') }}
+            {{ form.is_hidden.label(class='custom-control-label') }}
+        </div>
+        <div class="my-1">
+            {% if new %}
+                {{ form.submit(value='Добавить таск', class='btn btn-primary') }}
+            {% else %}
+                {{ form.submit(value='Изменить таск', class='btn btn-primary') }}
+            {% endif %}
+        </div>
+    </form>
+{% endblock %}
+{% block scripts %}
+    <script src="/static/js/admin_task.js"></script>
+{% endblock %}
+{% block styles %}
+    <style>
+        .custom-file-label::after {
+            content: 'Обзор...';
+        }
+    </style>
+{% endblock %}

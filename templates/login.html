@@ -1,0 +1,97 @@
+{# YTCTF Platform
+{# Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+{# See full NOTICE at http://github.com/YummyTacos/YTCTF #}
+
+{% extends "base.html" %}
+{% block content %}
+    {# TODO: center form on screen #}
+    {% if not form.email %}
+        <h1>Войти</h1>
+    {% else %}
+        <h1>Зарегистрироваться</h1>
+    {% endif %}
+    <form method="post">
+        {{ form.hidden_tag() }}
+        <div class="form-row my-1">
+            <div class="col-auto">
+                {{ form.login(required=True, placeholder='Имя пользователя', value=request.args.get('username', request.form.get('login', '')),
+                          class='form-control bg-dark text-light' + (' is-invalid' if form.errors.login else '')) }}
+                {% for error in form.errors.login %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        {% if form.email %}
+            <div class="form-row my-1">
+                <div class="col-auto">
+                    {{ form.email(required=True, placeholder='Электронная почта',
+                          class='form-control bg-dark text-light' + (' is-invalid' if form.errors.email else '')) }}
+                    {% for error in form.errors.email %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        {% if form.first_name %}
+            <div class="form-row my-1">
+                <div class="col-auto">
+                    {{ form.first_name(required=True, placeholder='Имя',
+                             class='form-control bg-dark text-light' + (' is-invalid' if form.errors.first_name else '')) }}
+                    {% for error in form.errors.first_name %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        {% if form.last_name %}
+            <div class="form-row my-1">
+                <div class="col-auto">
+                    {{ form.last_name(placeholder='Фамилия (необязательно)',
+                             class='form-control bg-dark text-light' + (' is-invalid' if form.errors.last_name else '')) }}
+                    {% for error in form.errors.last_name %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        {% if form.group %}
+            <div class="form-row my-1">
+                <div class="col-auto">
+                    {{ form.group(placeholder='Группа (необязательно)', min=71, max=86, step=1,
+                             class='form-control bg-dark text-light' + (' is-invalid' if form.errors.group else '')) }}
+                    {% for error in form.errors.group %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        <div class="form-row my-1">
+            <div class="col-auto">
+                {{ form.password(required=True, placeholder='Пароль',
+                             class='form-control bg-dark text-light' + (' is-invalid' if form.errors.password else '')) }}
+                {% for error in form.errors.password %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        {% if form.password2 %}
+            <div class="form-row my-1">
+                <div class="col-auto">
+                    {{ form.password2(required=True, placeholder='Пароль ещё раз',
+                             class='form-control bg-dark text-light' + (' is-invalid' if form.errors.password2 else '')) }}
+                    {% for error in form.errors.password2 %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        <div class="my-1">
+            {{ form.submit(class='btn btn-success', value=('Войти' if not form.email else 'Зарегистрироваться')) }}
+            {% if not form.email %}
+                <a href="{{ url_for('register') }}" class="btn btn-primary" role="button">
+                    Регистрация
+                </a>
+            {% endif %}
+        </div>
+    </form>
+{% endblock %}
