@@ -1,5 +1,5 @@
 # YTCTF Platform
-# Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+# Copyright © 2018-2019 Evgeniy Filimonov <evgfilim1@gmail.com>
 # See full NOTICE at http://github.com/YummyTacos/YTCTF
 
 from datetime import datetime, timedelta
@@ -165,7 +165,7 @@ class Scoreboard(Resource):
         query = models.User.query.filter(models.User.is_admin.isnot(True))
         if request.args.get('type', '') != 'all':
             authors = {a.user_id for a in models.TaskAuthors.query.all()}
-            query = query.filter(models.User.id.notin_(authors))
+            query = query.filter(models.User.id.notin_(authors) & (models.User.points != 0))
         for u in query.order_by(models.User.points.desc()).all():
             extra = u.first_name
             if u.last_name:

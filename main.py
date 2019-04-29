@@ -63,7 +63,15 @@ def broken(exc):
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
-    return render_template('checker.html', tasks=Task.query.all())
+    as_user = request.args.get('as', type=int)
+    if g.user is not None and g.user.is_admin and as_user is not None:
+        user_ = User.query.get(as_user)
+        if user_ is not None:
+            flash(f'Просмотр страницы от имени пользователя {user_.username} (id={user_.id})',
+                  'warning')
+    else:
+        user_ = g.user
+    return render_template('checker.html', tasks=Task.query.all(), user=user_)
 
 
 @app.route('/login', methods=['GET', 'POST'])

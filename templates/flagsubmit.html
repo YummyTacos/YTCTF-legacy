@@ -1,11 +1,11 @@
 {# YTCTF Platform
-{# Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+{# Copyright © 2018-2019 Evgeniy Filimonov <evgfilim1@gmail.com>
 {# See full NOTICE at http://github.com/YummyTacos/YTCTF #}
 
 {% extends 'base.html' %}
 {% block content %}
-    <table class="table table-bordered table-dark">
-        {% for submit in submits|reverse %}
+    <table class="table table-responsive table-bordered table-dark">
+        {% for submit in submits[-100:]|reverse %}
             <tr {% if submit.correct %}class="bg-success"{% endif %}>
                 <td>
                     {{ submit.submit.time }}

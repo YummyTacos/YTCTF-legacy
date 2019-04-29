@@ -65,7 +65,7 @@ def find_user(name):
 
 
 def safe_next(url, fallback=None):
-    if _safe_url_re.fullmatch(url) is not None:
+    if url is not None and _safe_url_re.fullmatch(url) is not None:
         return url
     return fallback or url_for('main')
 
