@@ -1,5 +1,5 @@
 # YTCTF Platform
-# Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+# Copyright © 2018-2019 Evgeniy Filimonov <evgfilim1@gmail.com>
 # See full NOTICE at http://github.com/YummyTacos/YTCTF
 
 from datetime import datetime
@@ -7,12 +7,16 @@ from pathlib import Path
 from pprint import pprint
 from traceback import format_exception
 from hashlib import sha1
+from re import compile as re_compile
 
 from flask import g, redirect, url_for, request, flash, current_app as app
 from functools import wraps
 from enum import Enum, unique
 
 from models import User, Event as EventModel
+
+
+_safe_url_re = re_compile(r'^/.+')
 
 
 @unique
@@ -60,11 +64,17 @@ def find_user(name):
     return User.query.filter_by(username=name).one_or_none()
 
 
+def safe_next(url, fallback=None):
+    if _safe_url_re.fullmatch(url) is not None:
+        return url
+    return fallback or url_for('main')
+
+
 def login_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         if g.user is None:
-            return redirect(url_for('main', next=request.path))
+            return redirect(url_for('login', next=request.path))
         return f(*args, **kwargs)
     return wrapper
 
@@ -73,7 +83,7 @@ def admin_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         if g.user is None:
-            return redirect(url_for('main', next=request.path))
+            return redirect(url_for('login', next=request.path))
         if not g.user.is_admin:
             flash('Нет доступа!', 'danger')
             return redirect(url_for('main'))

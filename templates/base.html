@@ -1,5 +1,5 @@
 {# YTCTF Platform
-{# Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+{# Copyright © 2018-2019 Evgeniy Filimonov <evgfilim1@gmail.com>
 {# See full NOTICE at http://github.com/YummyTacos/YTCTF #}
 
 <!DOCTYPE HTML>
@@ -68,10 +68,12 @@
                             <b>{{ g.user.username }}</b>
                         </a> ({{ g.user.points if not g.user.is_admin else 'admin' }})
                     </p>
-                {% endif %}
-                {% if g.user %}
                     <a href="{{ url_for('logout') }}" class="btn btn-danger" role="button">
                         Выйти
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-success" role="button">
+                        Войти
                     </a>
                 {% endif %}
             </div>

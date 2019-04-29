@@ -1,5 +1,5 @@
 {# YTCTF Platform
-{# Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+{# Copyright © 2018-2019 Evgeniy Filimonov <evgfilim1@gmail.com>
 {# See full NOTICE at http://github.com/YummyTacos/YTCTF #}
 
 {% extends 'base.html' %}
@@ -52,20 +52,32 @@
                 {{ form.hidden_tag() }}
                 <div class="form-row my-1">
                     <div class="col">
-                        {% set t_solved = g.user in task.solved or g.user.is_admin or g.user in task.authors %}
+                        {% set t_solved = g.user in task.solved %}
+                        {% set t_cant_solve = g.user.is_admin or g.user in task.authors %}
+                        {% set not_logged_in = g.user == None %}
+                        {% set t_disabled = t_solved or t_cant_solve or not_logged_in %}
                         <h3>{{ form.flag.label() }}</h3>
-                        {{ form.flag(required=True, placeholder='Введи флаг', disabled=t_solved,
-                                class='w-100 form-control bg-dark text-light' + (' is-invalid' if form.errors.flag else '') +
-                                (' is-valid' if t_solved else ''), autocomplete='off', pattern='^(test|yt)ctf[a-zA-Z0-9_]+$') }}
+                        {{ form.flag(required=True, placeholder='Введи флаг', disabled=t_disabled,
+                                class='w-100 form-control bg-dark text-light' + (' is-invalid' if form.errors.flag or not_logged_in else '') +
+                                (' is-valid' if t_solved or t_cant_solve else ''), autocomplete='off', pattern='^(test|yt)ctf[a-zA-Z0-9_]+$') }}
                         {% for error in form.errors.flag %}
                             <div class="invalid-feedback">{{ error }}</div>
                         {% endfor %}
                         {% if t_solved %}
                             <div class="valid-feedback">Таск решён!</div>
+                        {% elif t_cant_solve %}
+                            <div class="valid-feedback">
+                                Ты не можешь решать этот таск, так как у тебя есть доступ к флагу
+                            </div>
+                        {% elif not_logged_in %}
+                            <div class="invalid-feedback">
+                                Чтобы решить таск, необходимо
+                                <a href="{{ url_for('login', next=url_for('task', task_id=task.id)) }}">войти</a>
+                            </div>
                         {% endif %}
                     </div>
                 </div>
-                {% if not t_solved %}
+                {% if not t_disabled %}
                     <div class="my-1">
                         {{ form.submit(class='btn btn-primary', value='Отправить') }}
                         <button class="btn btn-success" id="show-flag" type="button">

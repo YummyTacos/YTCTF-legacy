@@ -1,5 +1,5 @@
 # YTCTF Platform
-# Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+# Copyright © 2018-2019 Evgeniy Filimonov <evgfilim1@gmail.com>
 # See full NOTICE at http://github.com/YummyTacos/YTCTF
 
 from datetime import datetime
@@ -13,7 +13,8 @@ from app import app
 from admin import bp as admin_bp
 from forms import LoginForm, RegisterForm, FlagForm, ChangePasswordForm, UserDataForm
 from models import User, Task, db, TasksSolved, FlagSubmit, TaskAuthors
-from utils import find_user, login_required, admin_required, get_ending, Event, save_exception
+from utils import (find_user, login_required, admin_required, get_ending, Event, save_exception,
+                   safe_next)
 
 _api = Api(api.bp)
 
@@ -62,17 +63,22 @@ def broken(exc):
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
-    if g.user is None:
-        form = LoginForm()
-        if form.validate_on_submit():
-            session['user_id'] = find_user(form.login.data).id
-            return redirect(request.args.get('next') or url_for('main'))
-        flash('Для доступа к платформе необходимо войти', 'warning')
-        return render_template('login.html', form=form)
-    # next_ = request.args.get('next')
-    # if next_:
-    #     return redirect(next_)
     return render_template('checker.html', tasks=Task.query.all())
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if g.user is not None:
+        flash('Ты уже вошёл в аккаунт', 'warning')
+        return redirect(url_for('main'))
+    form = LoginForm()
+    next_ = request.args.get('next')
+    if form.validate_on_submit():
+        session['user_id'] = find_user(form.login.data).id
+        return redirect(safe_next(next_))
+    if next_ is not None:
+        flash('Для доступа к платформе необходимо войти', 'warning')
+    return render_template('login.html', form=form)
 
 
 @app.route('/logout')
@@ -95,7 +101,7 @@ def register():
         db.session.add(u)
         db.session.commit()
         flash('Ты успешно зарегистрировался!')
-        return redirect(url_for('main', username=form.login.data))
+        return redirect(url_for('login', username=form.login.data))
     return render_template('login.html', form=form)
 
 
@@ -147,7 +153,6 @@ def scoreboard():
 
 @app.route('/<int:task_id>', methods=['GET', 'POST'])
 @app.route('/task/<int:task_id>', methods=['GET', 'POST'])
-@login_required
 def task(task_id):
     task_ = Task.query.get(task_id)
     if not task_:
@@ -155,6 +160,9 @@ def task(task_id):
         return redirect(url_for('main'))
     form = FlagForm(task_.flag)
     if form.is_submitted():
+        if not g.user:
+            flash('Чтобы решать таски, необходимо войти', 'danger')
+            return redirect(url_for('task', task_id=task_id))
         s = FlagSubmit(
             task_id=task_id,
             user_id=g.user.id,
@@ -176,7 +184,7 @@ def task(task_id):
             else:
                 flash('Баллы за этот таск не были начислены, т.к. он скрыт.', 'warning')
             if len(task_.solved) == 0:
-                # `s` is initialized if the form is submitted, but `validate_on_submit`
+                # `s` is initialized if the form is submitted, and `validate_on_submit`
                 #  return False if the form was not submitted, so `s` is always initialized.
                 # noinspection PyUnboundLocalVariable
                 db.session.add(Event.FIRST_BLOOD.trigger(flag_submit_id=s.id))
@@ -185,6 +193,9 @@ def task(task_id):
         # Redirecting to the same endpoint to prevent 'resend data?' question from browser
         return redirect(url_for('task', task_id=task_id))
     if task_.is_hidden:
+        if g.user is None:
+            flash(f'Нет доступа к таску с id={task_id}', 'danger')
+            return redirect(url_for('main'))
         flash('Этот таск скрыт. Возможно, тебе не стоит его решать.', 'danger')
     return render_template('task.html', task=task_, form=form)
 
