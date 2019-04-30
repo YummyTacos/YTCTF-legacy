@@ -175,7 +175,7 @@ def task(task_id):
             task_id=task_id,
             user_id=g.user.id,
             time=datetime.utcnow(),
-            flag=form.flag.data
+            flag=form.flag.data.strip()
         )
         db.session.add(s)
         db.session.commit()
@@ -192,8 +192,8 @@ def task(task_id):
             else:
                 flash('Баллы за этот таск не были начислены, т.к. он скрыт.', 'warning')
             if len(task_.solved) == 0:
-                # `s` is initialized if the form is submitted, and `validate_on_submit`
-                #  return False if the form was not submitted, so `s` is always initialized.
+                # `s` is always initialized if the form is submitted and `validate_on_submit`
+                #  return False if the form was not submitted.
                 # noinspection PyUnboundLocalVariable
                 db.session.add(Event.FIRST_BLOOD.trigger(flag_submit_id=s.id))
             task_.solved.append(g.user)

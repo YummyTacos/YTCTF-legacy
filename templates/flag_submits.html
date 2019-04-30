@@ -5,21 +5,35 @@
 {% extends 'base.html' %}
 {% block content %}
     <table class="table table-responsive table-bordered table-dark">
+        <thead>
+        <tr>
+            <td>Time</td>
+            <td>Username</td>
+            <td>Task</td>
+            <td>Flag</td>
+        </tr>
+        </thead>
+        <tbody>
         {% for submit in submits[-100:]|reverse %}
             <tr {% if submit.correct %}class="bg-success"{% endif %}>
                 <td>
                     {{ submit.submit.time }}
                 </td>
                 <td>
-                    {{ submit.user.username }}
+                    <a href="{{ url_for('user', user_id=submit.user.id) }}" class="text-light">
+                        {{ submit.user.username }} ({{ submit.user.id }})
+                    </a>
                 </td>
                 <td>
-                    {{ submit.task.task }}
+                    <a href="{{ url_for('task', task_id=submit.task.id) }}" class="text-light">
+                        {{ submit.task.task }} ({{ submit.task.id }})
+                    </a>
                 </td>
                 <td>
                     {{ submit.submit.flag }}
                 </td>
             </tr>
         {% endfor %}
+        </tbody>
     </table>
 {% endblock %}

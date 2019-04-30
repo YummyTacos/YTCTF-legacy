@@ -1,14 +1,16 @@
 # YTCTF Platform
-# Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+# Copyright © 2018-2019 Evgeniy Filimonov <evgfilim1@gmail.com>
 # See full NOTICE at http://github.com/YummyTacos/YTCTF
 
 from flask import g
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, StringField, PasswordField, ValidationError, TextAreaField, \
-    SelectMultipleField, BooleanField, FileField
+from wtforms import (SubmitField, StringField, PasswordField, ValidationError, TextAreaField,
+                     SelectMultipleField, BooleanField, FileField)
 from wtforms.fields.html5 import EmailField, URLField, IntegerField
-from wtforms.validators import DataRequired, Email, EqualTo, Regexp, Optional, URL, InputRequired, \
-    Length
+from wtforms.validators import (DataRequired, Email, EqualTo, Regexp, Optional, URL, InputRequired,
+                                Length)
+
+from re import compile as re_compile
 
 from app import app
 from models import User
@@ -70,18 +72,17 @@ class RegisterForm(UserForm, UserDataForm):
 
 
 class FlagForm(SubmitForm):
-    flag = StringField('Флаг', validators=[DataRequired(),
-                                           Regexp(app.config.get('FLAG_REGEXP'),
-                                                  message='Неверный формат флага. Он должен'
-                                                          ' начинаться с "testctf" или "ytctf" и'
-                                                          ' может содержать только латинские буквы,'
-                                                          ' цифры и символ "_"')])
+    flag = StringField('Флаг', validators=[DataRequired()])
 
     def __init__(self, flag):
         super().__init__()
+        self._flag_re = re_compile(app.config.get('FLAG_REGEXP', r'^\w*ctf.+'))
         self._right_flag = flag
 
     def validate_flag(self, field):
+        field.data = field.data.strip()
+        if self._flag_re.fullmatch(field.data) is None:
+            raise ValidationError('Неверный формат флага.')
         if field.data != self._right_flag:
             raise ValidationError('Неверный флаг. Учти, что регистр флага имеет значение.')
 

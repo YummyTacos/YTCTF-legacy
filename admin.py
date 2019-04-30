@@ -1,5 +1,5 @@
 # YTCTF Platform
-# Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+# Copyright © 2018-2019 Evgeniy Filimonov <evgfilim1@gmail.com>
 # See full NOTICE at http://github.com/YummyTacos/YTCTF
 
 from os import remove
@@ -12,7 +12,7 @@ from flask import Blueprint, flash, redirect, url_for, request, render_template,
 from werkzeug.utils import secure_filename
 
 from forms import TaskForm
-from models import User, db, FlagSubmit, Task, TasksSolved, TaskFiles
+from models import User, db, FlagSubmit, Task, TasksSolved, TaskFiles, Event as EventModel
 from utils import admin_required, Event
 
 bp = Blueprint('admin', __name__)
@@ -182,4 +182,20 @@ def submits():
 
         for x in FlagSubmit.query.all()
     ]
-    return render_template('flagsubmit.html', submits=submits_)
+    return render_template('flag_submits.html', submits=submits_)
+
+
+@bp.route('/events')
+@admin_required
+def events():
+    events_ = [
+        {'time': e.time,
+         'type': Event(e.type).name,
+         'task_id': e.task_id,
+         'task': e.task,
+         'flag_submit_id': e.flag_submit_id,
+         'flag_submit': e.flag_submit,
+         'extra': e.extra}
+        for e in EventModel.query.all()
+    ]
+    return render_template('events.html', events=events_)

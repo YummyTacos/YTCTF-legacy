@@ -1,0 +1,65 @@
+{# YTCTF Platform
+{# Copyright © 2018-2019 Evgeniy Filimonov <evgfilim1@gmail.com>
+{# See full NOTICE at http://github.com/YummyTacos/YTCTF #}
+
+{% extends 'base.html' %}
+{% block content %}
+    <table class="table table-responsive table-bordered table-dark">
+        <thead>
+        <tr>
+            <td>Time</td>
+            <td>Type</td>
+            <td>Task</td>
+            <td>User</td>
+            <td>Flag</td>
+            <td>Extra info</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for event in events[-100:]|reverse %}
+            <tr>
+                <td>
+                    {{ event.time }}
+                </td>
+                <td>
+                    {{ event.type }}
+                </td>
+                <td>
+                    {% if event.task %}
+                        <a href="{{ url_for('task', task_id=event.task.id) }}" class="text-light">
+                            {{ event.task.task }} ({{ event.task.id }})
+                        </a>
+                    {% elif event.flag_submit %}
+                        <a href="{{ url_for('task', task_id=event.flag_submit.task.id) }}"
+                           class="text-light">
+                            {{ event.flag_submit.task.task }} ({{ event.flag_submit.task.id }})
+                        </a>
+                    {% else %}
+                        None
+                    {% endif %}
+                </td>
+                <td>
+                    {% if event.flag_submit %}
+                        <a href="{{ url_for('user', user_id=event.flag_submit.user.id) }}"
+                           class="text-light">
+                            {{ event.flag_submit.user.username }} ({{ event.flag_submit.user.id }})
+                        </a>
+                    {% else %}
+                        None
+                    {% endif %}
+                </td>
+                <td>
+                    {% if event.flag_submit %}
+                        {{ event.flag_submit.flag }}
+                    {% else %}
+                        None
+                    {% endif %}
+                </td>
+                <td>
+                    {{ event.extra }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
