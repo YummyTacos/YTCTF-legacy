@@ -39,7 +39,7 @@ def before_request():
 
 @bp.route('/')
 def docs():
-    return abort(403)
+    return abort(404)
 
 
 def login_required(f):
@@ -80,7 +80,6 @@ class Auth(Resource):
 
 class Task(Resource):
     @staticmethod
-    @login_required
     def get():
         task_id = request.args.get('id', type=int)
         if task_id is None:
@@ -109,6 +108,7 @@ class Task(Resource):
         }
 
     @staticmethod
+    @login_required
     def post():
         data = get_post_data()
         if 'flag' not in data or 'id' not in data:
@@ -121,10 +121,7 @@ class Task(Resource):
         flag = data['flag']
         m = match(app.config.get('FLAG_REGEXP', r'^\w+ctf\w+$'), flag)
         if m is None:
-            return abort(400, message='Неверный формат флага. Он должен'
-                                      ' начинаться с "testctf" или "ytctf" и'
-                                      ' может содержать только латинские буквы,'
-                                      ' цифры и символ "_"')
+            return abort(400, message='Неверный формат флага.')
         s = models.FlagSubmit(
             task_id=task.id,
             user_id=g.api_user.id,
@@ -143,7 +140,6 @@ class Task(Resource):
 
 class Tasks(Resource):
     @staticmethod
-    @login_required
     def get():
         tasks = models.Task.query
         if not request.args.get('hidden', False):

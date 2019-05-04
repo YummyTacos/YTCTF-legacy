@@ -104,7 +104,6 @@ class TaskForm(SubmitForm):
     description = TextAreaField(validators=[DataRequired()])
     link = URLField(validators=[Optional(), URL()])
     files = FileField('Файлы не выбраны', validators=[Optional()])
-    hint = TextAreaField(validators=[Optional()])
     points = IntegerField(validators=[InputRequired()])
     flag = StringField(validators=[DataRequired(), Regexp(app.config.get('FLAG_REGEXP'))])
     author = SelectMultipleField(validators=[DataRequired()], coerce=int)

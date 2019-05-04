@@ -6,8 +6,8 @@
 {% block content %}
     <h1>Таски</h1>
     <div class="task-grid">
-        {% for task in tasks if (not task.is_hidden or request.args.get('hidden', False) or g.user.is_admin) %}
-            {% set solved = user != None and (user in task.solved or user.is_admin or user in task.authors) %}
+        {% for task in tasks if (not task.is_hidden or (g.user and request.args.get('hidden', False)) or g.user.is_admin) %}
+            {% set solved = user and (user in task.solved or user.is_admin or user in task.authors) %}
             {% set people_solved = task.solved|length %}
             <a href="{{ url_for('task', task_id=task.id) }}"
                class="{% if solved %}solved {% endif %}{% if task.is_hidden %}task-hidden {% endif %}task-card rounded {{ task.category }}">
@@ -15,7 +15,9 @@
                 <span class="task-points">{{ task.points }}</span>
                 <span class="task-category">{{ task.category }}</span>
                 <br/>
-                <span class="people-solved-count">{{ people_solved }} {{ g.get_ending('человек', people_solved, '', 'а', '') }} {{ g.get_ending('решил', people_solved, '', 'и', 'и') }}</span>
+                <span class="people-solved-count">
+                    {{ get_plural(people_solved, 'человек решил', 'человека решили', 'человек решили') }}
+                </span>
             </a>
         {% else %}
             <p><i>Тасков нет, но вы держитесь там</i></p>

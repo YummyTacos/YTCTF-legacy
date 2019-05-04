@@ -12,9 +12,9 @@ import api
 from app import app
 from admin import bp as admin_bp
 from forms import LoginForm, RegisterForm, FlagForm, ChangePasswordForm, UserDataForm
-from models import User, Task, db, TasksSolved, FlagSubmit, TaskAuthors
+from models import User, Task, db, TasksSolved, FlagSubmit, TaskAuthors, Hint, UsedHint
 from utils import (find_user, login_required, admin_required, get_ending, Event, save_exception,
-                   safe_next)
+                   safe_next, get_plural)
 
 _api = Api(api.bp)
 
@@ -32,16 +32,18 @@ _api.add_resource(api.Scoreboard, '/scoreboard')
 _api.add_resource(api.Updates, '/events')
 
 
+app.jinja_env.globals['get_plural'] = get_plural
+
+
 @app.before_request
 def before_request():
-    if request.args.get('t') is not None:
-        return abort(418)
-    g.get_ending = get_ending
     user_id = session.get('user_id', None)
     if user_id is None:
         g.user = None
     else:
         g.user = User.query.get(user_id)
+    if request.args.get('t') is not None:
+        return abort(418)
 
 
 @app.errorhandler(418)
@@ -52,7 +54,9 @@ def teapot(exc):
 @app.errorhandler(Exception)
 def broken(exc):
     if app.debug:
-        raise exc
+        if not isinstance(exc, HTTPException):
+            raise exc
+        return f'{exc.code} {exc.name}<br/>{exc.description}', exc.code
     h = save_exception(exc)
     err_code, err_name, err_desc = 500, 'Internal Server Error', ''
     if isinstance(exc, HTTPException):
@@ -179,7 +183,7 @@ def task(task_id):
         )
         db.session.add(s)
         db.session.commit()
-        if form.flag.data != task_.flag:
+        if form.flag.data.strip() != task_.flag:
             e = Event.TASK_FAILED.trigger(flag_submit_id=s.id)
         else:
             e = Event.TASK_SOLVED.trigger(flag_submit_id=s.id)
@@ -206,6 +210,19 @@ def task(task_id):
             return redirect(url_for('main'))
         flash('Этот таск скрыт. Возможно, тебе не стоит его решать.', 'danger')
     return render_template('task.html', task=task_, form=form)
+
+
+@app.route('/hint/<int:hint_id>')
+def hint(hint_id):
+    hint_ = Hint.query.get(hint_id)
+    if hint_ is None:
+        flash(f'Подсказка с id={hint_id} не найдена', 'danger')
+        return redirect(url_for('main'))
+    db.session.add(UsedHint(hint_id=hint_id, user_id=g.user.id))
+    g.user.points -= hint_.cost
+    db.session.commit()
+    flash(f'Подсказка за {hint_.cost} баллов открыта', 'success')
+    return redirect(url_for('task', task_id=hint_.task_id))
 
 
 @app.route('/user/<int:user_id>', methods=['GET', 'POST'])

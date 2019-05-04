@@ -1,0 +1,22 @@
+{# YTCTF Platform
+{# Copyright © 2018-2019 Evgeniy Filimonov <evgfilim1@gmail.com>
+{# See full NOTICE at http://github.com/YummyTacos/YTCTF #}
+
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Ошибки и падения</h1>
+    {% for exc in files %}
+        <p>
+            <i class="material-icons">insert_drive_file</i>
+            <a href="{{ url_for('static', filename='files/exc/' + exc) }}">
+                {{ exc|replace('.txt', '') }}
+            </a>
+        </p>
+    {% else %}
+        <p>Падений не происходило. Хорошая работа ;)</p>
+    {% endfor %}
+    {# TODO #}
+    {#    <a href="{{ url_for('admin.clear_crashes') }}" class="btn btn-outline-warning">#}
+    {#        Очистить все логи падений#}
+    {#    </a>#}
+{% endblock %}

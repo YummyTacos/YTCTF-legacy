@@ -16,7 +16,7 @@ from enum import Enum, unique
 from models import User, Event as EventModel
 
 
-_safe_url_re = re_compile(r'^/.+')
+_safe_url_re = re_compile(r'^/[^/].*')
 
 
 @unique
@@ -45,19 +45,6 @@ def save_exception(exc):
         f.write('\nrequest:\n')
         pprint(get_dir_dict(request, key=lambda x: not x.startswith('__')), stream=f, width=100)
     return h
-
-
-# def get_event_fields(event_type, event=None):
-#     if event_type is Event.NEW_TASK or event_type is Event.UPDATE_TASK:
-#         f = ('task',)
-#     elif event_type is Event.TASK_SOLVED or event_type is Event.TASK_FAILED \
-#             or event_type is Event.FIRST_BLOOD:
-#         f = ('task', 'user')
-#     else:
-#         raise ValueError('Unknown or wrong event_type')
-#     if event is not None:
-#         f = tuple(getattr(event, x) for x in f)
-#     return f
 
 
 def find_user(name):
@@ -97,6 +84,10 @@ def get_ending(word, n, one, two, five):
     if 2 <= n % 10 < 5 and n % 100 // 10 != 1:
         return word + two
     return word + five
+
+
+def get_plural(n, one, two, five):
+    return f'{n} {get_ending("", n, one, two, five)}'
 
 
 def get_dir_dict(obj, *, key=None):

@@ -19,13 +19,30 @@
             </div>
             <div class="mb-1" id="task-description">
                 <p>{{ task.description|replace('\n', '<br/>')|safe }}</p>
-                {% if task.hint %}
-                    <p><a class="text-light d-block" data-toggle="collapse" href="#task-hint"
+                {% if task.hints %}
+                    <p><a class="text-light d-block" data-toggle="collapse" href="#task-hints"
                           aria-expanded="false">
-                        <b>Подсказка</b>
+                        <b>Подсказки</b>
                     </a></p>
-                    <div class="collapse" id="task-hint">
-                        <p><i>{{ task.hint|replace('\n', '<br/>')|safe }}</i></p>
+                    <div class="collapse" id="task-hints">
+                        {% if not g.user %}
+                            <p class="text-danger">Для просмотра подсказок необходимо
+                                <a href="{{ url_for('login', next=url_for('task', task_id=task.id)) }}">
+                                    войти
+                                </a>
+                            </p>
+                        {% else %}
+                            {% for hint in task.hints %}
+                                {% if hint.is_used_by(g.user) or g.user.is_admin %}
+                                    <p><i>Подсказка ({{ hint.cost }}):</i> {{ hint.text }}</p>
+                                {% else %}
+                                    <p><a href="{{ url_for('hint', hint_id=hint.id) }}"
+                                          class="btn btn-outline-warning">
+                                        Подсказка ({{ -hint.cost }})
+                                    </a></p>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
                     </div>
                 {% endif %}
                 {% if task.files %}
@@ -86,14 +103,31 @@
                     </div>
                 {% elif g.user.is_admin %}
                     <div class="my-1">
-                        <a href="{{ url_for('admin.modify_task', task_id=task.id) }}"
-                           class="btn btn-outline-primary mr-1">
-                            Изменить таск
-                        </a>
-                        <button id="delete-task" class="btn btn-outline-danger" data-toggle="modal"
-                                data-target="#task-delete-confirm" type="button">
-                            Удалить таск
-                        </button>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary dropdown-toggle" type="button"
+                                    data-toggle="dropdown">
+                                Управление таском
+                            </button>
+                            <div class="dropdown-menu bg-primary">
+                                <a class="dropdown-item bg-primary text-light"
+                                   href="{{ url_for('admin.modify_task', task_id=task.id) }}">
+                                    Изменить таск
+                                </a>
+                                <a class="dropdown-item bg-primary text-light"
+                                   href="{{ url_for('admin.task_hints', task_id=task.id) }}">
+                                    Редактировать подсказки
+                                </a>
+                                {#<button id="delete-task" class="dropdown-item bg-primary text-danger"
+                                        data-toggle="modal" data-target="#task-delete-confirm"
+                                        type="button">
+                                    Удалить таск
+                                </button>#}
+                                <a id="delete-task" class="dropdown-item bg-primary text-light"
+                                   data-toggle="modal" href="#task-delete-confirm">
+                                    Удалить таск
+                                </a>
+                            </div>
+                        </div>
                         <div class="modal fade" id="task-delete-confirm" tabindex="-1"
                              role="dialog">
                             <div class="modal-dialog" role="document">
@@ -137,6 +171,7 @@
                     <a href="{{ url_for('user', user_id=u.id) }}" class="text-dark">
                         {{ u.username }}
                     </a>
+
                 </li>
             {% endfor %}
         </ul>

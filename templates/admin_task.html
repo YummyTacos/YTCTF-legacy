@@ -1,5 +1,5 @@
 {# YTCTF Platform
-{# Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+{# Copyright © 2018-2019 Evgeniy Filimonov <evgfilim1@gmail.com>
 {# See full NOTICE at http://github.com/YummyTacos/YTCTF #}
 
 {% extends 'base.html' %}
@@ -11,36 +11,38 @@
     {% endif %}
     <form method="post" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
-        <div class="form-group">
-            {{ form.name(placeholder='Таск',
-                             class='form-control bg-dark text-light' + (' is-invalid' if form.errors.name else '')) }}
-            {% for error in form.errors.name %}
-                <div class="invalid-feedback">{{ error }}</div>
-            {% endfor %}
-        </div>
-        <div class="form-group">
-            {{ form.category(placeholder='Категория', autocomplete='off', list='categories',
-                                 class='form-control bg-dark text-light' + (' is-invalid' if form.errors.category else '')) }}
-            {% for error in form.errors.category %}
-                <div class="invalid-feedback">{{ error }}</div>
-            {% endfor %}
-            <datalist id="categories">
-                {% for v in ('web', 'stegano', 'crypto', 'admin', 'ppc', 'reverse', 'forensics', 'ctb', 'pwn', 'joy', 'recon', 'misc') %}
-                    <option value="{{ v }}"></option>
+        <div class="form-group form-row">
+            <div class="col-12 col-md">
+                {{ form.name(placeholder='Таск',
+                                 class='form-control bg-dark text-light' + (' is-invalid' if form.errors.name else '')) }}
+                {% for error in form.errors.name %}
+                    <div class="invalid-feedback">{{ error }}</div>
                 {% endfor %}
-            </datalist>
+            </div>
+            <div class="pt-3 pt-md-0 col-6 col-md-2">
+                {{ form.category(placeholder='Категория', autocomplete='off', list='categories',
+                                 class='form-control bg-dark text-light' + (' is-invalid' if form.errors.category else '')) }}
+                {% for error in form.errors.category %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+                <datalist id="categories">
+                    {% for v in ('web', 'stegano', 'crypto', 'admin', 'ppc', 'reverse', 'forensics', 'ctb', 'pwn', 'joy', 'recon', 'misc') %}
+                        <option value="{{ v }}"></option>
+                    {% endfor %}
+                </datalist>
+            </div>
+            <div class="pt-3 pt-md-0 col-6 col-md-2">
+                {{ form.points(placeholder='Очки', min=0, step=25, max=1000,
+                                 class='form-control bg-dark text-light' + (' is-invalid' if form.errors.points else '')) }}
+                {% for error in form.errors.points %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+            </div>
         </div>
         <div class="form-group">
             {{ form.description(placeholder='Описание таска',
                                  class='form-control bg-dark text-light' + (' is-invalid' if form.errors.description else '')) }}
             {% for error in form.errors.description %}
-                <div class="invalid-feedback">{{ error }}</div>
-            {% endfor %}
-        </div>
-        <div class="form-group">
-            {{ form.hint(placeholder='Подсказка',
-                                 class='form-control bg-dark text-light' + (' is-invalid' if form.errors.hint else '')) }}
-            {% for error in form.errors.hint %}
                 <div class="invalid-feedback">{{ error }}</div>
             {% endfor %}
         </div>
@@ -66,13 +68,6 @@
             </button>
         </div>
         <div class="form-group">
-            {{ form.points(placeholder='Очки', min=0, step=25,
-                                 class='form-control bg-dark text-light' + (' is-invalid' if form.errors.points else '')) }}
-            {% for error in form.errors.points %}
-                <div class="invalid-feedback">{{ error }}</div>
-            {% endfor %}
-        </div>
-        <div class="form-group">
             {{ form.author(class='bg-dark text-light custom-select' + (' is-invalid' if form.errors.author else '')) }}
             {% for error in form.errors.author %}
                 <div class="invalid-feedback">{{ error }}</div>
@@ -80,7 +75,7 @@
         </div>
         <div class="form-group form-row">
             <div class="col">
-                {{ form.flag(placeholder='Флаг', autocomplete='off', pattern='^(test|yt)ctf[a-zA-Z0-9_]+$',
+                {{ form.flag(placeholder='Флаг', autocomplete='off', pattern=flag_pattern,
                                  class='form-control bg-dark text-light' + (' is-invalid' if form.errors.flag else '')) }}
                 {% for error in form.errors.flag %}
                     <div class="invalid-feedback">{{ error }}</div>
@@ -137,15 +132,16 @@
         </div>
         <div class="my-1">
             {% if new %}
-                {{ form.submit(value='Добавить таск', class='btn btn-primary') }}
+                {{ form.submit(value='Добавить таск', class='btn btn-success') }}
             {% else %}
-                {{ form.submit(value='Изменить таск', class='btn btn-primary') }}
+                {{ form.submit(value='Изменить таск', class='btn btn-success') }}
             {% endif %}
         </div>
     </form>
 {% endblock %}
 {% block scripts %}
-    <script src="/static/js/admin_task.js"></script>
+    <script src="{{ url_for('static', filename='js/admin_task.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/form_leave_confirm.js') }}"></script>
 {% endblock %}
 {% block styles %}
     <style>

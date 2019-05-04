@@ -1,13 +1,14 @@
 /** YTCTF Platform
- * Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+ * Copyright © 2018-2019 Evgeniy Filimonov <evgfilim1@gmail.com>
  * See full NOTICE at http://github.com/YummyTacos/YTCTF
  */
 
 const labelForFiles = $('label[for=files]');
 const defaultLabel = labelForFiles.text();
+const files = $('#files');
 
 function filesOnInput() {
-    const self = $('#files')[0];
+    const self = files[0];
     if (self.files.length === 0) {
         labelForFiles.text(defaultLabel);
     } else {
@@ -19,7 +20,7 @@ function filesOnInput() {
     }
 }
 
-$('#files').on('input', filesOnInput);
+files.on('input', filesOnInput);
 
 $('#flag').attr('type', 'password');
 

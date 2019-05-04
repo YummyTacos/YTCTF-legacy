@@ -1,5 +1,5 @@
 # YTCTF Platform
-# Copyright © 2018 Evgeniy Filimonov <evgfilim1@gmail.com>
+# Copyright © 2018-2019 Evgeniy Filimonov <evgfilim1@gmail.com>
 # See full NOTICE at http://github.com/YummyTacos/YTCTF
 
 from bcrypt import gensalt, hashpw, checkpw
@@ -48,7 +48,8 @@ class Task(db.Model):
     flag = db.Column(db.String())
     solved = db.relationship('User', secondary='tasks_solved')
     is_hidden = db.Column(db.Boolean(), default=False)
-    hint = db.Column(db.String())
+    hint = db.Column(db.String())  # FIXME: remove
+    hints = db.relationship('Hint')
 
 
 class TasksSolved(db.Model):
@@ -94,6 +95,25 @@ class Event(db.Model):
     flag_submit_id = db.Column(db.Integer(), db.ForeignKey('flag_submit.id', ondelete='CASCADE'))
     flag_submit = db.relationship('FlagSubmit')
     extra = db.Column(db.String())
+
+
+class Hint(db.Model):
+    id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+    task_id = db.Column(db.Integer(), db.ForeignKey('task.id', ondelete='CASCADE'))
+    task = db.relationship('Task')
+    cost = db.Column(db.Integer(), default=0)
+    text = db.Column(db.String())
+
+    def is_used_by(self, user):
+        return UsedHint.query.filter_by(hint_id=self.id, user_id=user.id).one_or_none() is not None
+
+
+class UsedHint(db.Model):
+    id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+    hint_id = db.Column(db.Integer(), db.ForeignKey('hint.id', ondelete='CASCADE'))
+    hint = db.relationship('Hint')
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id', ondelete='CASCADE'))
+    user = db.relationship('User')
 
 
 def _init():

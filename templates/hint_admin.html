@@ -1,0 +1,38 @@
+{# YTCTF Platform
+{# Copyright © 2018-2019 Evgeniy Filimonov <evgfilim1@gmail.com>
+{# See full NOTICE at http://github.com/YummyTacos/YTCTF #}
+
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Редактирование подсказок</h1>
+    <form method="post">
+        {% for hint in task.hints %}
+            <div class="form-group form-row">
+                <div class="col-12 col-md">
+                    <input type="text" value="{{ hint.text }}" name="hint{{ hint.id }}_text"
+                           class="form-control bg-dark text-light" placeholder="Подсказка" required>
+                </div>
+                <div class="pt-2 pt-md-0 col col-md-2">
+                    <input type="number" value="{{ hint.cost }}" min="0" max="{{ task.points }}"
+                           step="25" name="hint{{ hint.id }}_cost"
+                           class="form-control bg-dark text-light" placeholder="Стоимость" required>
+                </div>
+                <div class="pt-2 pt-md-0 col-auto col-md-1">
+                    <a href="{{ url_for('admin.delete_hint', hint_id=hint.id) }}"
+                       class="btn btn-danger">Удалить</a>
+                </div>
+            </div>
+        {% endfor %}
+        <div class="my-1">
+            <a href="{{ url_for('admin.add_task_hint', task_id=task.id) }}" class="btn btn-success">
+                Добавить подсказку
+            </a>
+        </div>
+        <div class="my-2">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </div>
+    </form>
+{% endblock %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/form_leave_confirm.js') }}"></script>
+{% endblock %}
