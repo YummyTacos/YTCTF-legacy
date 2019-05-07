@@ -3,6 +3,8 @@
  * See full NOTICE at http://github.com/YummyTacos/YTCTF
  */
 
+const show_all = $('#show-all');
+
 function escapeHTML(s) {
     return (s+'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
@@ -15,18 +17,18 @@ function generateRow(userData) {
     return `
 <div class="scoreboard-row${t}">
     <div class="scoreboard-info">
-        <a class="scoreboard-user" href="${escapeHTML(userData.user_link)}">
+        <a class="scoreboard-user" href="/user/${userData.user_id}">
             ${escapeHTML(userData.username)}
         </a>
         <div class="scoreboard-extra">${escapeHTML(userData.extra)}</div>
     </div>
-    <div class="scoreboard-points">${escapeHTML(userData.points)}</div>
+    <div class="scoreboard-points">${userData.points}</div>
 </div>`;
 }
 
 function getData() {
-    let link = '/api/scoreboard';
-    if ($('#show-all').is(':checked')) {
+    let link = '/api/internal/scoreboard';
+    if (show_all.is(':checked')) {
         link += '?type=all'
     }
     $.get(link).done(function (data) {
@@ -38,7 +40,7 @@ function getData() {
             scoreboard.append(row);
         }
         if (data.length === 0) {
-            scoreboard.append('<p><i>Никто ещё не зарегистрирован</i></p>');
+            scoreboard.append('<p class="empty-set"><i>Список пуст</i></p>');
         }
     });
 }
@@ -48,7 +50,7 @@ function worker() {
     setTimeout(worker, 5000);
 }
 
-$('#show-all').click(function () {
+show_all.click(function () {
     getData();
 });
 

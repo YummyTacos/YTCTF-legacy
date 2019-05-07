@@ -38,6 +38,8 @@ def recalculate():
     for t in FlagSubmit.query.all():
         if Task.query.get(t.task_id) is None:
             db.session.delete(t)
+        if t.flag is None:
+            db.session.delete(t)
     for t in TasksSolved.query.all():
         if Task.query.get(t.task_id) is None:
             db.session.delete(t)

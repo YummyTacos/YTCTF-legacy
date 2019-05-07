@@ -11,6 +11,10 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
+.empty-set {
+    font-size: 1.5rem;
+}
+
 .material-icons {
     font-size: 18px;
 }
@@ -89,11 +93,10 @@ body {
     background: #212529;
 }
 
-.scoreboard-loading {
+.scoreboard-loading, .checker-loading {
     background: none !important;
     margin-top: 0.5rem;
 }
-
 
 .scoreboard-row:nth-child(even) {
     background: #4a5055;
@@ -204,4 +207,12 @@ a[data-toggle=collapse][aria-expanded=false]::before {
 
 a[data-toggle=collapse][aria-expanded=true]::before {
     content: '-';
+}
+
+button.dropdown-item.filter-selected::before {
+    content: '✓';
+}
+
+button.dropdown-item.filter::before {
+    content: '✗';
 }

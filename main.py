@@ -9,19 +9,23 @@ from flask_restful import Api
 from werkzeug.exceptions import HTTPException
 
 import api
+import internal_api
 from app import app
 from admin import bp as admin_bp
 from forms import LoginForm, RegisterForm, FlagForm, ChangePasswordForm, UserDataForm
 from models import User, Task, db, TasksSolved, FlagSubmit, TaskAuthors, Hint, UsedHint
-from utils import (find_user, login_required, admin_required, get_ending, Event, save_exception,
-                   safe_next, get_plural)
+from utils import (find_user, login_required, admin_required, Event, save_exception, safe_next,
+                   get_plural)
 
 _api = Api(api.bp)
+_internal_api = Api(internal_api.bp)
 
 # noinspection PyTypeChecker
 _api.add_resource(api.Auth, '/auth')
 # noinspection PyTypeChecker
 _api.add_resource(api.Task, '/task')
+# noinspection PyTypeChecker
+_api.add_resource(api.Hint, '/hint')
 # noinspection PyTypeChecker
 _api.add_resource(api.Tasks, '/tasks')
 # noinspection PyTypeChecker
@@ -31,6 +35,10 @@ _api.add_resource(api.Scoreboard, '/scoreboard')
 # noinspection PyTypeChecker
 _api.add_resource(api.Updates, '/events')
 
+# noinspection PyTypeChecker
+_internal_api.add_resource(internal_api.Tasks, '/tasks')
+# noinspection PyTypeChecker
+_internal_api.add_resource(internal_api.Scoreboard, '/scoreboard')
 
 app.jinja_env.globals['get_plural'] = get_plural
 
@@ -67,15 +75,7 @@ def broken(exc):
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
-    as_user = request.args.get('as', type=int)
-    if g.user is not None and g.user.is_admin and as_user is not None:
-        user_ = User.query.get(as_user)
-        if user_ is not None:
-            flash(f'Просмотр страницы от имени пользователя {user_.username} (id={user_.id})',
-                  'warning')
-    else:
-        user_ = g.user
-    return render_template('checker.html', tasks=Task.query.all(), user=user_)
+    return render_template('checker.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -213,11 +213,15 @@ def task(task_id):
 
 
 @app.route('/hint/<int:hint_id>')
+@login_required
 def hint(hint_id):
     hint_ = Hint.query.get(hint_id)
     if hint_ is None:
         flash(f'Подсказка с id={hint_id} не найдена', 'danger')
         return redirect(url_for('main'))
+    if UsedHint.query.filter_by(hint_id=hint_id, user_id=g.user.id).one_or_none() is not None:
+        flash('Подсказка уже открыта', 'danger')
+        return redirect(url_for('task', task_id=hint_.task_id))
     db.session.add(UsedHint(hint_id=hint_id, user_id=g.user.id))
     g.user.points -= hint_.cost
     db.session.commit()
@@ -267,6 +271,7 @@ def auth():
 
 
 app.register_blueprint(api.bp, url_prefix='/api')
+app.register_blueprint(internal_api.bp, url_prefix='/api/internal')
 app.register_blueprint(admin_bp, url_prefix='/admin')
 
 if __name__ == '__main__':
