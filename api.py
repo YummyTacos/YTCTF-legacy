@@ -256,9 +256,9 @@ class User(Resource):
         ]
         first_blood = []
         for t in solved_tasks:
-            ts = models.TasksSolved.query.filter(models.TasksSolved.task_id == t.id).first()
+            ts = models.TasksSolved.query.filter(models.TasksSolved.task_id == t).first()
             if ts.user_id == user.id:
-                first_blood.append(t.id)
+                first_blood.append(t)
         data = {
             'id': user.id,
             'username': user.username,
