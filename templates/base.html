@@ -20,7 +20,8 @@
 <header class="fixed-top">
     <nav class="navbar navbar-expand-md navbar-dark bg-info" id="navbar">
         <a class="navbar-brand" href="{{ url_for('main') }}">
-            <img src="{{ url_for('static', filename='favicon-32x32.png') }}" class="d-inline-block align-top" alt="" />
+            <img src="{{ url_for('static', filename='favicon-32x32.png') }}"
+                 class="d-inline-block align-top" alt=""/>
             YTCTF
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse"
@@ -45,24 +46,32 @@
                         </a>
                         <div class="dropdown-menu bg-info"
                              aria-labelledby="admin-dropdown">
-                            <a class="dropdown-item bg-info text-light" href="{{ url_for('admin.add_task') }}">
+                            <a class="dropdown-item bg-info text-light"
+                               href="{{ url_for('admin.add_task') }}">
                                 Добавить таск
                             </a>
-                            <a class="dropdown-item bg-info text-light" href="{{ url_for('admin.recalculate') }}">
+                            <a class="dropdown-item bg-info text-light"
+                               href="{{ url_for('admin.recalculate') }}">
                                 Пересчитать баллы
-                            </a>
-                            <a class="dropdown-item bg-info text-light" href="{{ url_for('admin.submits') }}">
-                                Посылки
-                            </a>
-                            <a class="dropdown-item bg-info text-light" href="{{ url_for('admin.events') }}">
-                                Действия
-                            </a>
-                            <a class="dropdown-item bg-info text-light" href="{{ url_for('admin.exceptions') }}">
-                                Логи падений
                             </a>
                         </div>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Платформа</a>
+                        <div class="dropdown-menu bg-info">
+                            <a class="dropdown-item bg-info text-light"
+                               href="{{ url_for('admin.submits') }}">
+                                Посылки
+                            </a>
+                            <a class="dropdown-item bg-info text-light"
+                               href="{{ url_for('admin.events') }}">
+                                Действия
+                            </a>
+                            <a class="dropdown-item bg-info text-light"
+                               href="{{ url_for('admin.exceptions') }}">
+                                Логи падений
+                            </a>
+                        </div>
                     </li>
                 {% endif %}
             </ul>

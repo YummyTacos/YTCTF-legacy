@@ -289,5 +289,16 @@ def events():
 @bp.route('/exc_list')
 @admin_required
 def exceptions():
-    exceptions_ = [f.name for f in (Path(app.static_folder) / 'files/exc').iterdir()]
+    exceptions_ = {f.stat().st_mtime: f.name
+                   for f in (Path(app.static_folder) / 'files/exc').iterdir()}
+    exceptions_ = [x[1] for x in sorted(exceptions_.items())]
     return render_template('exc_browser.html', files=exceptions_)
+
+
+@bp.route('/exc_clear')
+@admin_required
+def clear_crashes():
+    for f in (Path(app.static_folder) / 'files/exc').iterdir():
+        remove(str(f.resolve()))
+    flash('Логи очищены!', 'success')
+    return redirect(url_for('.exceptions'))
