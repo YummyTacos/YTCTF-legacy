@@ -12,10 +12,12 @@
                 {{ exc|replace('.txt', '') }}
             </a>
         </p>
-        <a href="{{ url_for('admin.clear_crashes') }}" class="btn btn-outline-warning">
-            Очистить все логи падений
-        </a>
     {% else %}
         <p>Падений не происходило. Хорошая работа ;)</p>
     {% endfor %}
+    {% if files %}
+        <a href="{{ url_for('admin.clear_crashes') }}" class="btn btn-outline-warning">
+            Очистить все логи падений
+        </a>
+    {% endif %}
 {% endblock %}
