@@ -2,6 +2,8 @@
 
 YummyTacos CTF Platform for task-based (jeopardy) CTFs. Written on Flask. Fully Python 3.6+ compatible.
 
+**IMPORTANT:** This version of YTCTF is _considered legacy_. New backend is here: [YummyTacos/YTCTF-API](https://github.com/YummyTacos/YTCTF-API)
+
 ## Installation
 
 * Clone this repository
